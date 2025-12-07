@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Markdown to PDF</title>
+    <link rel="stylesheet" href="vendor/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="vendor/easymde/easymde.min.css" />
+    <link rel="stylesheet" href="github.min.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="highlight.min.js" async defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div>
+          <h1>Markdown to PDF</h1>
+        </div>
+      </header>
+      <main class="workspace">
+        <section class="panel left">
+          <div class="panel-header">
+            
+            <div class="actions">
+              <button id="buildBtn">Build PDF</button>
+              <a id="downloadBtn" href="#" class="ghost" download="document.pdf">Download</a>
+              <span id="status" aria-live="polite"></span>
+            </div>
+          </div>
+          <div class="editor">
+            <textarea id="markdown" placeholder="# Start typing markdown here..."></textarea>
+          </div>
+        </section>
+        <section class="panel right">
+         
+          <div class="preview">
+            <iframe style="min-height: 39cm;" id="pdfFrame" title="PDF preview" src="/preview/pdf" allowfullscreen></iframe>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <small>Built with ❤️ using Outline and Browserless</small>
+      </footer>
+    </div>
+    <div id="errorModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="modal-content" role="document">
+        <div class="modal-header">
+          <h2>Build Error</h2>
+          <button id="errorModalClose" title="Close">✕</button>
+        </div>
+        <pre id="errorLogs" class="modal-body" tabindex="0"></pre>
+      </div>
+    </div>
+    <!-- CodeMirror core must load before modes and EasyMDE -->
+    <script src="vendor/codemirror/lib/codemirror.js"></script>
+    <!-- CodeMirror addons and modes for fenced code highlighting -->
+    <script src="vendor/codemirror/addon/mode/overlay.js"></script>
+    <script src="vendor/codemirror/addon/mode/multiplex.js"></script>
+    <script src="vendor/codemirror/addon/mode/simple.js"></script>
+    <script src="vendor/codemirror/mode/meta.js"></script>
+    <!-- Modes -->
+    <script src="vendor/codemirror/mode/gfm/gfm.js"></script>
+    <script src="vendor/codemirror/mode/xml/xml.js"></script>
+    <script src="vendor/codemirror/mode/javascript/javascript.js"></script>
+    <script src="vendor/codemirror/mode/css/css.js"></script>
+    <script src="vendor/codemirror/mode/python/python.js"></script>
+    <script src="vendor/codemirror/mode/shell/shell.js"></script>
+    <script src="vendor/codemirror/mode/yaml/yaml.js"></script>
+    <script src="vendor/codemirror/mode/markdown/markdown.js"></script>
+    <script src="vendor/codemirror/mode/go/go.js"></script>
+    <script src="vendor/codemirror/mode/rust/rust.js"></script>
+    <!-- EasyMDE after CodeMirror so it can reuse global CodeMirror -->
+    <script src="vendor/easymde/easymde.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+  </html>

@@ -1,0 +1,259 @@
+:root {
+    --bg: #f8fafc;
+    --panel: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    --accent: #2563eb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+}
+
+header,
+footer {
+    padding: 10px 16px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+}
+
+header h1 {
+    font-size: 16px;
+    margin: 0;
+}
+
+footer {
+    border-top: 1px solid var(--border);
+    border-bottom: none;
+    color: var(--muted);
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: calc(100% - 92px);
+    gap: 0;
+}
+
+section.left,
+section.right {
+    display: flex;
+    flex-direction: column;
+}
+
+.editor {
+    flex: 1;
+    padding: 8px;
+}
+
+textarea#markdown {
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    resize: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+/* EasyMDE layout to fill panel */
+.editor .EasyMDEContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.editor .EasyMDEContainer .CodeMirror, 
+.editor .EasyMDEContainer .CodeMirror-scroll {
+    height: 100% !important;
+}
+
+/* CodeMirror token colors (light, subtle) */
+.CodeMirror {
+    color: var(--text);
+    background: #ffffff;
+}
+/* Keep font size unchanged inside editor */
+.editor .EasyMDEContainer .CodeMirror,
+.editor .EasyMDEContainer .CodeMirror pre {
+    font-size: inherit;
+}
+.CodeMirror .cm-header,
+.CodeMirror .cm-header-1,
+.CodeMirror .cm-header-2,
+.CodeMirror .cm-header-3,
+.CodeMirror .cm-header-4,
+.CodeMirror .cm-header-5,
+.CodeMirror .cm-header-6 {
+    font-size: inherit;
+}
+.editor .EasyMDEContainer .CodeMirror {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.editor .EasyMDEContainer .CodeMirror-gutters {
+    background: #ffffff;
+    border-right: 1px solid var(--border);
+}
+
+/* Token colors with higher specificity to override default */
+.cm-s-default .cm-header, .CodeMirror .cm-header { color: #0b5394; font-weight: 700; }
+.cm-s-default .cm-formatting-header, .CodeMirror .cm-formatting-header { color: #94a3b8; }
+.cm-s-default .cm-strong, .CodeMirror .cm-strong { color: #0f172a; font-weight: 700; }
+.cm-s-default .cm-em, .CodeMirror .cm-em { color: #334155; }
+.cm-s-default .cm-link, .CodeMirror .cm-link { color: #1d4ed8; text-decoration: none; }
+.cm-s-default .cm-url, .CodeMirror .cm-url { color: #0369a1; text-decoration: none; }
+.EasyMDEContainer .cm-link, .EasyMDEContainer .cm-url { text-decoration: none !important; }
+.cm-s-default .cm-quote, .CodeMirror .cm-quote { color: #475569; }
+.cm-s-default .cm-code, .CodeMirror .cm-code { color: #0f172a; background: transparent; }
+
+/* Remove gray overlays that reduce contrast */
+.CodeMirror-selected { background: rgba(29, 78, 216, 0.12) !important; }
+.CodeMirror-activeline-background { background: transparent !important; }
+
+/* Within fenced code blocks (inner language modes) */
+.cm-s-default .cm-comment, .CodeMirror .cm-comment { color: #0f172a; }
+.cm-s-default .cm-keyword, .CodeMirror .cm-keyword { color: #8b5cf6; }
+.cm-s-default .cm-atom, .CodeMirror .cm-atom { color: #7c3aed; }
+.cm-s-default .cm-number, .CodeMirror .cm-number { color: #b45309; }
+.cm-s-default .cm-def, .CodeMirror .cm-def { color: #2563eb; }
+.cm-s-default .cm-variable, .CodeMirror .cm-variable { color: #0f172a; }
+.cm-s-default .cm-variable-2, .CodeMirror .cm-variable-2 { color: #1f2937; }
+.cm-s-default .cm-variable-3, .cm-s-default .cm-type, .CodeMirror .cm-variable-3, .CodeMirror .cm-type { color: #0ea5e9; }
+.cm-s-default .cm-string, .CodeMirror .cm-string { color: #047857; }
+.cm-s-default .cm-string-2, .CodeMirror .cm-string-2 { color: #059669; }
+.cm-s-default .cm-property, .CodeMirror .cm-property { color: #9333ea; }
+.cm-s-default .cm-operator, .CodeMirror .cm-operator { color: #6b7280; }
+.cm-s-default .cm-builtin, .CodeMirror .cm-builtin { color: #dc2626; }
+.cm-s-default .cm-tag, .CodeMirror .cm-tag { color: #2563eb; }
+.cm-s-default .cm-attribute, .CodeMirror .cm-attribute { color: #b91c1c; }
+.cm-s-default .cm-meta, .CodeMirror .cm-meta { color: #475569; }
+.cm-s-default .cm-bracket, .CodeMirror .cm-bracket { color: #64748b; }
+.cm-s-default .cm-error, .CodeMirror .cm-error { color: #dc2626; background: rgba(220,38,38,0.08); }
+
+.actions {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+}
+
+.actions form {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.actions label {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.preview {
+    flex: 1;
+    padding: 8px;
+}
+
+iframe#pdfFrame {
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: white;
+}
+
+@media (max-width: 1000px) {
+    main {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .preview {
+        height: 70vh;
+    }
+}
+
+/* Error modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 1000;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-content {
+    width: min(900px, 95vw);
+    max-height: 80vh;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #1f2937;
+}
+
+.modal-header h2 {
+    font-size: 14px;
+    margin: 0;
+}
+
+.modal-header button {
+    background: transparent;
+    color: var(--text);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.modal-body {
+    margin: 0;
+    padding: 12px 16px;
+    overflow: auto;
+    white-space: pre-wrap;
+    color: #fca5a5;
+}

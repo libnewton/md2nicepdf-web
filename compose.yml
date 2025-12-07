@@ -1,0 +1,24 @@
+services:
+  mdpdf:
+    # build: .
+    image: ghcr.io/libnewton/md2pdf
+    hostname: mdpdf
+    container_name: mdpdf
+    restart: unless-stopped
+    depends_on:
+      - chromeserver
+    ports:
+      - "5000:5000"
+    environment:
+      - AUTH_TOKEN=${AUTH_TOKEN}
+  chromeserver:
+    image: ghcr.io/browserless/chromium
+    hostname: chromeserver
+    environment:
+      - "CHROME_REFRESH_TIME=3600000"
+      - "CONNECTION_TIMEOUT=120000"
+      - "FUNCTION_ENABLE_INCOGNITO_MODE=true"
+      - "MAX_CONCURRENT_SESSIONS=2"
+      - "TOKEN=internal"
+      - "ENABLE_DEBUGGER=false"
+    restart: unless-stopped
