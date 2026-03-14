@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/containerd/errdefs"
 	"github.com/moby/moby/api/types/container"
 	"github.com/moby/moby/api/types/mount"
 	"github.com/moby/moby/client"
@@ -16,6 +17,7 @@ import (
 
 const (
 	containerTimeout = 20 * time.Second
+	imagePullTimeout = 5 * time.Minute
 	cpuLimit         = 1_000_000_000     // 1 CPU in NanoCPUs
 	memoryLimit      = 512 * 1024 * 1024 // 512 MB
 	storageSize      = "10G"
@@ -29,19 +31,56 @@ type CompilationError struct {
 
 func (e *CompilationError) Error() string { return e.Msg }
 
-// convertMarkdownToPDF orchestrates the full container lifecycle for converting
-// markdown to PDF. It creates ephemeral directories, runs the converter
-// container, and returns the resulting PDF bytes.
-func (s *Server) convertMarkdownToPDF(markdown string, noPageNumbers bool) ([]byte, error) {
-	ctx := context.Background()
-
-	// Create Docker client
+func (s *Server) newDockerClient() (*client.Client, error) {
 	cli, err := client.NewClientWithOpts(
 		client.WithHost(s.dockerHost),
 		client.WithAPIVersionNegotiation(),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("docker client: %w", err)
+	}
+
+	return cli, nil
+}
+
+func (s *Server) ensureConverterImage(ctx context.Context) error {
+	cli, err := s.newDockerClient()
+	if err != nil {
+		return err
+	}
+	defer cli.Close()
+
+	if _, err := cli.ImageInspect(ctx, s.converterImage); err == nil {
+		return nil
+	} else if !errdefs.IsNotFound(err) {
+		return fmt.Errorf("inspect image %q: %w", s.converterImage, err)
+	}
+
+	log.Printf("Converter image %s not found locally, pulling", s.converterImage)
+
+	pullResp, err := cli.ImagePull(ctx, s.converterImage, client.ImagePullOptions{})
+	if err != nil {
+		return fmt.Errorf("pull image %q: %w", s.converterImage, err)
+	}
+	defer pullResp.Close()
+
+	if err := pullResp.Wait(ctx); err != nil {
+		return fmt.Errorf("wait for image pull %q: %w", s.converterImage, err)
+	}
+
+	log.Printf("Converter image %s pulled successfully", s.converterImage)
+	return nil
+}
+
+// convertMarkdownToPDF orchestrates the full container lifecycle for converting
+// markdown to PDF. It creates ephemeral directories, runs the converter
+// container, and returns the resulting PDF bytes.
+func (s *Server) convertMarkdownToPDF(markdown string, noPageNumbers bool) ([]byte, error) {
+	ctx := context.Background()
+
+	cli, err := s.newDockerClient()
+	if err != nil {
+		return nil, err
 	}
 	defer cli.Close()
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -25,6 +26,12 @@ func main() {
 	workDir := env("WORK_DIR", "/tmp/md2pdf")
 
 	srv := NewServer(authToken, dockerHost, converterImage, workDir)
+
+	pullCtx, pullCancel := context.WithTimeout(context.Background(), imagePullTimeout)
+	defer pullCancel()
+	if err := srv.ensureConverterImage(pullCtx); err != nil {
+		log.Fatalf("Failed to ensure converter image: %v", err)
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /pdf", srv.HandlePDF)
