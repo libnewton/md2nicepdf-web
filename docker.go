@@ -16,10 +16,10 @@ import (
 )
 
 const (
-	containerTimeout = 20 * time.Second
+	containerTimeout = 50 * time.Second
 	imagePullTimeout = 5 * time.Minute
-	cpuLimit         = 1_000_000_000     // 1 CPU in NanoCPUs
-	memoryLimit      = 512 * 1024 * 1024 // 512 MB
+	cpuLimit         = 1_000_000_000      // 1 CPU in NanoCPUs
+	memoryLimit      = 1024 * 1024 * 1024 // 1 GB
 	storageSize      = "10G"
 )
 

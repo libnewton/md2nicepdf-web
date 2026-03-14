@@ -1,6 +1,6 @@
 services:
   md2pdf:
-    image: ghcr.io/libnewton/md2nicepdf:latest
+    image: ghcr.io/libnewton/md2nicepdf-web:latest
     hostname: md2pdf
     container_name: md2pdf
     restart: unless-stopped
