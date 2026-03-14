@@ -7,7 +7,7 @@ async function build() {
     setStatus('Building…');
     let token = localStorage.getItem('auth_token');
     if (!token) {
-      token = prompt("Please enter the authentication token:");
+      token = prompt("Please enter the internal auth token:");
       if (token) {
         localStorage.setItem('auth_token', token);
       } else {
@@ -18,33 +18,46 @@ async function build() {
 
     const raw = easyMDE ? easyMDE.value() : el('markdown').value;
     let markdown = typeof raw === 'string' ? raw : String(raw || '');
-  
+
+    const body = { md: markdown };
+    if (el('noPageNumbers').checked) {
+      body.no_page_numbers = true;
+    }
 
     const res = await fetch('/pdf', {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'internal-auth': token
       },
-      body: JSON.stringify({ md: markdown }),
+      body: JSON.stringify(body),
     });
     if (!res.ok) {
       if (res.status === 401) {
         localStorage.removeItem('auth_token'); // Clear invalid token
       }
-      const text = await res.text();
-      showErrorModal(text || 'Build failed');
-      throw new Error(text || 'Build failed');
+      // Parse error response safely — never show raw internal details
+      let userMessage = 'Build failed. Please try again.';
+      try {
+        const errData = await res.json();
+        if (errData.detail) {
+          userMessage = errData.detail;
+        }
+      } catch (_) {
+        // Response wasn't JSON (e.g. proxy error) — use generic message
+      }
+      showErrorModal(userMessage);
+      throw new Error(userMessage);
     }
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     el('pdfFrame').src = url;
-    
+
     const downloadBtn = el('downloadBtn');
     downloadBtn.href = url;
     downloadBtn.download = "document" + '.pdf';
     downloadBtn.style.display = 'inline-block';
-    
+
     setStatus('Built ✓');
   } catch (e) {
     console.error(e);
@@ -64,40 +77,40 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.EasyMDE && window.CodeMirror && textarea) {
     try {
       // In case a stale autosave value exists from prior versions
-      try { localStorage.removeItem('md2pdf-editor'); } catch (_) {}
+      try { localStorage.removeItem('md2pdf-editor'); } catch (_) { }
       easyMDE = new EasyMDE({
         element: textarea,
         autofocus: true,
         spellChecker: false,
         status: false,
         toolbar: false,
-      codemirror: {
-          mode: { 
-            name: 'gfm', 
-            fencedCodeBlockHighlighting: true, 
+        codemirror: {
+          mode: {
+            name: 'gfm',
+            fencedCodeBlockHighlighting: true,
             highlightFormatting: false,
             tokenTypeOverrides: { code: 'atom' } // make unfenced/unknown code less gray
           },
           lineWrapping: true,
           lineNumbers: false,
           extraKeys: {
-            "Ctrl-Enter": function(cm) {
+            "Ctrl-Enter": function (cm) {
               build();
             }
           },
         },
-      shortcuts: {
-        toggleSideBySide: null,
-        toggleFullScreen: null,
-        togglePreview: null,
-      },
+        shortcuts: {
+          toggleSideBySide: null,
+          toggleFullScreen: null,
+          togglePreview: null,
+        },
         // Autosave disabled to avoid edge cases with stored non-string values
         sideBySideFullscreen: false,
         renderingConfig: { singleLineBreaks: false, codeSyntaxHighlighting: true },
         autoDownloadFontAwesome: false,
         forceSync: true,
       });
-      
+
       // Load saved content
       const savedContent = localStorage.getItem('md2pdf-content');
       if (savedContent) {

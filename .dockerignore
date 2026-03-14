@@ -1,1 +1,6 @@
 .env
+.git
+.github
+README.md
+LICENSE
+md2pdf
